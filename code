@@ -1,0 +1,128 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class ElectricityBillingSystem extends JFrame implements ActionListener {
+ JLabel nameLabel, addressLabel, meterReadingLabel;
+ JTextField nameTextField, addressTextField, meterReadingTextField;
+ JButton submitButton, viewBillsButton;
+ JTextArea billTextArea;
+
+ ArrayList<Customer> customerList;
+
+ public ElectricityBillingSystem() {
+ setTitle("Electricity Billing System");
+ setSize(400, 400);
+ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+ nameLabel = new JLabel("Name:");
+ addressLabel = new JLabel("Address:");
+ meterReadingLabel = new JLabel("Meter Reading:");
+
+ nameTextField = new JTextField();
+ addressTextField = new JTextField();
+ meterReadingTextField = new JTextField();
+
+ submitButton = new JButton("Submit");
+ submitButton.addActionListener(this);
+
+ viewBillsButton = new JButton("View Bills");
+ viewBillsButton.addActionListener(this);
+
+ billTextArea = new JTextArea();
+
+ JPanel panel = new JPanel(new GridLayout(4, 2));
+ panel.add(nameLabel);
+ panel.add(nameTextField);
+ panel.add(addressLabel);
+ panel.add(addressTextField);
+ panel.add(meterReadingLabel);
+ panel.add(meterReadingTextField);
+ panel.add(submitButton);
+ panel.add(viewBillsButton);
+
+ add(panel, BorderLayout.NORTH);
+ add(billTextArea, BorderLayout.CENTER);
+
+ customerList = new ArrayList<Customer>();
+ }
+
+ public void actionPerformed(ActionEvent e) {
+ if (e.getSource() == submitButton) {
+ String name = nameTextField.getText();
+ String address = addressTextField.getText();
+ double meterReading = Double.parseDouble(meterReadingTextField.getText());
+
+ Customer newCustomer = new Customer(name, address, meterReading);
+ customerList.add(newCustomer);
+
+ JOptionPane.showMessageDialog(null, "Customer added successfully.");
+ } else if (e.getSource() == viewBillsButton) {
+ String billsText = "";
+
+ for (Customer customer : customerList) {
+ Bill bill = new Bill(customer.getName(), customer.getAddress(), customer.calculateUsage());
+ billsText += bill.toString() + "\n";
+ }
+
+ billTextArea.setText(billsText);
+ }
+ }
+
+ public static void main(String[] args) {
+ ElectricityBillingSystem system = new ElectricityBillingSystem();
+ system.setVisible(true);
+ }
+}
+
+class Bill {
+ private String name;
+ private String address;
+ private double usage;
+ private double rate = 5.00;
+ private double fee = 20.00;
+
+ public Bill(String name, String address, double usage) {
+ this.name = name;
+ this.address = address;
+ this.usage = usage;
+ }
+
+ public double calculateAmount() {
+ return usage * rate + fee;
+ }
+
+ public String toString() {
+ return "Name: " + name + "\nAddress: " + address + "\nUsage: " + usage + " kWh" + "\nAmount: Rs." + calculateAmount();
+ }
+}
+
+class Customer {
+ private String name;
+ private String address;
+ private double meterReading;
+
+ public Customer(String name, String address, double meterReading) {
+ this.name = name;
+ this.address = address;
+ this.meterReading = meterReading;
+ }
+
+ public String getName() {
+ return name;
+ }
+
+ public String getAddress() {
+ return address;
+ }
+
+ public double getMeterReading() {
+ return meterReading;
+ }
+
+ public double calculateUsage() {
+ // You can define your own formula to calculate the electricity usage
+ return meterReading * 0.5;
+ }
+}
